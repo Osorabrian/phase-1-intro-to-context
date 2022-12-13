@@ -16,22 +16,21 @@ function createEmployeeRecords(arrays){
    
 function createTimeInEvent(obj, dateStamp){
 
-        obj.timeInEvents[0] = {
-            type: "TimeIn",
-            hour: parseInt(dateStamp.slice(-4)),
-            date: dateStamp.slice(0,10)
-        } 
+    obj.timeInEvents.push({
+        type: "TimeIn",
+        hour: parseInt(dateStamp.slice(-4)),
+        date: dateStamp.slice(0,10)
+    })
     return obj
 }
 
 function createTimeOutEvent(obj, dateStamp){
     
-    obj.timeOutEvents[0] = {
+    obj.timeOutEvents.push({
         type: "TimeOut",
         hour: parseInt(dateStamp.slice(-4)),
         date: dateStamp.slice(0,10)
-    }
- 
+    })
     return obj
 }
 
@@ -46,12 +45,16 @@ function wagesEarnedOnDate(obj, date){
     
 }
 
-function allWagesFor(obj) {
-    let allWages = obj.timeInEvents.map(element => wagesEarnedOnDate(obj, element.date))
-    let total = 0
-    allWages.forEach(element => total = element + total)
-    return total * 7
-  }
+function allWagesFor(employee){
+    let workedDates = employee.timeInEvents.map(timeIn =>{
+        return timeIn.date
+    })
+    let paid = workedDates.reduce((accumulator, date) => {
+        return accumulator + wagesEarnedOnDate(employee, date)
+    }, 0)
+
+    return paid
+}
 
 function calculatePayroll(arrays){
     let sum =  arrays.reduce((accumulator, currentValue) => {return(accumulator + allWagesFor(currentValue))}, 0)
